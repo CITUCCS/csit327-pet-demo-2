@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Pets.Contexts;
+using Pets.Dto;
 using Pets.Models;
 using Pets.Repositories;
+using Pets.Services;
 
 namespace Pets.Controllers
 {
@@ -11,17 +13,17 @@ namespace Pets.Controllers
     [ApiController]
     public class PetsController : ControllerBase
     {
-        private readonly IRepository<Pet> _repository;
+        private readonly IPetService _petService;
 
-        public PetsController(IRepository<Pet> repository)
+        public PetsController(IPetService petService)
         {
-            _repository = repository;
+            _petService = petService;
         }
 
         [HttpGet(Name = "GetAllPets")]
         public IActionResult GetAll()
         {
-            var pets = _repository.GetAll();
+            var pets = _petService.GetAllPets();
             if (pets.Any())
                 return Ok(pets);
             else
@@ -31,7 +33,7 @@ namespace Pets.Controllers
         [HttpGet("{id}", Name = "GetPetById")]
         public IActionResult Get(int id)
         {
-            var desiredPet = _repository.Get(id);
+            var desiredPet = _petService.GetPetById(id);
 
             if (desiredPet != null)
                 return Ok(desiredPet);
@@ -40,53 +42,46 @@ namespace Pets.Controllers
         }
 
         [HttpPost(Name = "CreatePet")]
-        public IActionResult Create([FromBody] Pet pet)
+        public IActionResult Create([FromBody] CreatePetDto pet)
         {
             if (pet == null)
                 return BadRequest();
 
-            if (_repository
-                .GetAll()
-                .Where(p => p.Name!.Equals(pet.Name))
-                .FirstOrDefault() != null)
+            try
+            {
+                _petService.AddPet(pet);
+            }
+            catch (Exception)
+            {
                 return BadRequest($"Pet {pet.Name} already exist");
-
-            _repository.Add(pet);
+            }
 
             return Ok(pet);
         }
 
         [HttpPut(Name = "UpdatePet")]
-        public IActionResult Update([FromBody] Pet pet)
+        public IActionResult Update([FromBody] PetDto pet)
         {
             if (pet == null)
                 return BadRequest();
 
-            var desiredPet = _repository.Get(pet.Id);
+            var updatedOrCreatedPet = _petService.Update(pet);
 
-            if (desiredPet == null)
-            {
-                _repository.Add(pet);
-                return Ok(pet);
-            } 
-            else
-            {
-                _repository.Update(desiredPet, pet);
-                return Ok(desiredPet);
-            }
+            return Ok(updatedOrCreatedPet);
         }
 
         [HttpDelete("{id}", Name = "DeletePet")]
         public IActionResult Delete(int id)
         {
-            var desiredPet = _repository.Get(id);
-
-            if (desiredPet == null)
+            try
             {
-                return NotFound($"No pet with id {id} exists.");
+                _petService.Delete(id);
             }
+            catch (Exception e)
+            {
 
-            _repository.Delete(new Pet { Id = id});
+                return NotFound(e.Message);
+            }
 
             return NoContent();
         }

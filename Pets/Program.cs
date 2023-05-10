@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Pets.Contexts;
 using Pets.Models;
 using Pets.Repositories;
+using Pets.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IRepository<Pet>, PetRepository>();
+builder.Services.AddScoped<IPetService, PetService>();
 
 builder.Services.AddDbContext<PetContext>(options =>
 {

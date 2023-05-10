@@ -31,6 +31,7 @@ namespace Pets.Repositories
         public void Delete(Pet pet)
         {
             _context.Pets.Remove(pet);
+            _context.SaveChanges();
         }
 
         public void Update(Pet pet, Pet updatePet)
