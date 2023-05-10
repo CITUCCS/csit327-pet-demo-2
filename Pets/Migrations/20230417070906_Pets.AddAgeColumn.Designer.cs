@@ -10,7 +10,7 @@ using Pets.Contexts;
 
 namespace Pets.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(PetContext))]
     [Migration("20230417070906_Pets.AddAgeColumn")]
     partial class PetsAddAgeColumn
     {

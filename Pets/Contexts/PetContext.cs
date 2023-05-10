@@ -3,9 +3,9 @@ using Pets.Models;
 
 namespace Pets.Contexts
 {
-    public class DataContext : DbContext
+    public class PetContext : DbContext
     {
-        public DataContext(DbContextOptions options) : base(options)
+        public PetContext(DbContextOptions options) : base(options)
         {
         }
 

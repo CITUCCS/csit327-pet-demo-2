@@ -9,7 +9,7 @@ using Pets.Contexts;
 
 namespace Pets.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(PetContext))]
     partial class DataContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

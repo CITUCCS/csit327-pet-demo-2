@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pets.Contexts;
+using Pets.Models;
+using Pets.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +12,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<DataContext>(options =>
+builder.Services.AddScoped<IRepository<Pet>, PetRepository>();
+
+builder.Services.AddDbContext<PetContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
